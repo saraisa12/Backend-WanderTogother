@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }))
 // Import routes
 
 const AuthRouter = require("./routes/authRouter")
-const tripRouter = require("./routes/Trip")
+const tripRouter = require("./routes/trip")
 
 //mount routes
 app.use("/auth", AuthRouter)
