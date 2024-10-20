@@ -1,16 +1,15 @@
 const Trip = require("../models/Trip")
 
 exports.trip_create_post = async (req, res) => {
+  const userId = res.locals.payload.id
+  console.log("Authenticated User:", userId) // Should show the user object now
   try {
-    console.log("Uploaded file:", req.file)
-    console.log("Authenticated User:", req.user) // Should show the user object now
-
     const { title, description, startDate, endDate, location } = req.body
     const image = req.file ? req.file.path : null
 
     console.log("Image path to be saved:", image)
 
-    const creatorId = req.user.id // Change to req.user.id
+    const creatorId = userId
 
     const trip = new Trip({
       title,
@@ -35,7 +34,10 @@ exports.trip_create_post = async (req, res) => {
 
 exports.get_user_trips = async (req, res) => {
   try {
-    const creatorId = req.user.id // Get the user's ID
+    const userId = res.locals.payload.id
+
+    const creatorId = userId // Get the user's ID
+    console.log(creatorId)
 
     // Find all trips created by the user
     const trips = await Trip.find({ creator: creatorId })
