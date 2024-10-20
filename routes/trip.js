@@ -29,4 +29,6 @@ router.get("/index", stripToken, verifyToken, tripCntrl.get_user_trips)
 
 router.get("/details/:id", stripToken, verifyToken, tripCntrl.trip_details_get)
 
+router.post("/invite", stripToken, verifyToken, tripCntrl.trip_invite_post)
+
 module.exports = router

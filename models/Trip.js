@@ -15,12 +15,6 @@ const tripSchema = mongoose.Schema(
     },
     endDate: {
       type: Date,
-      validate: {
-        validator: function (v) {
-          return v > this.startDate // Ensure endDate is after startDate
-        },
-        message: "End date must be after start date.",
-      },
     },
     location: {
       type: String,
@@ -32,6 +26,7 @@ const tripSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    invitees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,
