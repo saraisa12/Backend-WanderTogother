@@ -22,9 +22,12 @@ app.use(express.urlencoded({ extended: false }))
 // Import routes
 
 const AuthRouter = require("./routes/authRouter")
+const tripRouter = require("./routes/Trip")
 
 //mount routes
 app.use("/auth", AuthRouter)
+app.use("/uploads", express.static("uploads"))
+app.use("/trip", tripRouter)
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
