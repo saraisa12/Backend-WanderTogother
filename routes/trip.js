@@ -31,4 +31,11 @@ router.get("/details/:id", stripToken, verifyToken, tripCntrl.trip_details_get)
 
 router.post("/invite", stripToken, verifyToken, tripCntrl.trip_invite_post)
 
+router.delete(
+  "/invite/:inviteId",
+  stripToken,
+  verifyToken,
+  tripCntrl.delete_invite
+)
+
 module.exports = router

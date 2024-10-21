@@ -1,55 +1,54 @@
 const Trip = require("../models/Trip")
 const User = require("../models/User")
+const Invite = require("../models/Invite")
 const nodemailer = require("nodemailer")
 
 exports.trip_invite_post = async (req, res) => {
-  const { tripId, email } = req.body // Get trip ID and user's email from the request body
-  const userId = res.locals.payload.id // Get the authenticated user's ID
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    return res.status(500).json({ message: "Email configuration is missing" })
+  }
 
-  console.log("Received request to invite user:", { tripId, email, userId }) // Log input
+  const { tripId, email } = req.body
+  const userId = res.locals.payload.id
 
   try {
-    // Find the trip by ID
     const trip = await Trip.findById(tripId)
     if (!trip) {
-      console.log("Trip not found:", tripId) // Log if trip not found
       return res.status(404).json({ message: "Trip not found" })
     }
 
-    // Ensure that the requesting user is the creator of the trip
-    if (trip.creator.toString() !== userId) {
-      console.log("User not authorized to invite:", userId) // Log if not authorized
-      return res.status(403).json({
-        message: "You do not have permission to invite users to this trip.",
-      })
-    }
-
-    // Find the user to be invited by their email
     const user = await User.findOne({ email })
     if (!user) {
-      console.log("User not found:", email) // Log if user not found
       return res.status(404).json({ message: "User not found" })
     }
 
-    // Check if the user is already invited
-    if (trip.invitees.includes(user._id)) {
-      console.log("User is already invited:", user._id) // Log if already invited
+    // Check if the invite already exists
+    const existingInvite = await Invite.findOne({
+      trip: tripId,
+      invitee: user._id,
+    })
+    if (existingInvite) {
       return res.status(400).json({ message: "User is already invited" })
     }
 
-    // Add the user ID to the invitees array
-    trip.invitees.push(user._id)
-    await trip.save()
+    // Create a new invite document
+    const newInvite = new Invite({
+      trip: tripId,
+      invitee: user._id,
+      status: "pending", // Optionally set initial status
+    })
+    await newInvite.save()
 
-    // Optionally, send an email invite
+    // Configure the email transporter
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
+        pass: process.env.EMAIL_PASS,
       },
     })
 
+    // Prepare mail options
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -60,12 +59,15 @@ exports.trip_invite_post = async (req, res) => {
     console.log("Sending email to:", email) // Log email sending attempt
     console.log("Mail options:", mailOptions) // Log mail options
 
+    // Send the email
     await transporter.sendMail(mailOptions)
     console.log("Email sent successfully") // Log success
 
-    res.status(200).json({ message: "User invited successfully" })
+    res
+      .status(200)
+      .json({ message: "User invited successfully and email sent" })
   } catch (error) {
-    console.error("Error inviting user:", error) // Log error
+    console.error("Error inviting user:", error)
     res
       .status(500)
       .json({ message: "Error inviting user", error: error.message })
@@ -106,13 +108,18 @@ exports.trip_create_post = async (req, res) => {
 
 exports.get_user_trips = async (req, res) => {
   try {
+    console.log("hiii")
     const userId = res.locals.payload.id
 
-    const creatorId = userId // Get the user's ID
-    console.log(creatorId)
+    // Find all trips created by the user or where the user is an invitee
+    const trips = await Trip.find({
+      $or: [
+        { creator: userId }, // Trips created by the user
+        { invitees: userId }, // Trips where the user is an invitee
+      ],
+    })
 
-    // Find all trips created by the user
-    const trips = await Trip.find({ creator: creatorId })
+    console.log("Trips found:", trips)
 
     if (trips.length === 0) {
       return res.status(404).json({ message: "No trips found for this user." })
@@ -129,14 +136,70 @@ exports.get_user_trips = async (req, res) => {
 
 exports.trip_details_get = async (req, res) => {
   try {
-    const id = req.params.id
-    const trip = await Trip.findById(id)
+    const tripId = req.params.id
+    const trip = await Trip.findById(tripId)
+    if (!trip) {
+      return res.status(404).json({ message: "Trip not found" })
+    }
 
-    console.log(trip)
-    res.status(200).json(trip)
+    // Find all invitees for this trip
+    const invites = await Invite.find({ trip: tripId }).populate(
+      "invitee",
+      "email"
+    )
+
+    const invitees = invites.map((invite) => ({
+      email: invite.invitee.email,
+      status: invite.status,
+    }))
+
+    res.status(200).json({ trip, invitees })
   } catch (error) {
-    console.error("Error retrieving trip:", error)
-    res.status(500).json({ error: error.message })
+    console.error("Error fetching trip details:", error)
+    res
+      .status(500)
+      .json({ message: "Error fetching trip details", error: error.message })
+  }
+}
+
+exports.update_invite_status = async (req, res) => {
+  const { inviteId } = req.params
+  const { status } = req.body // 'accepted' or 'declined'
+
+  try {
+    const invite = await Invite.findById(inviteId)
+    if (!invite) {
+      return res.status(404).json({ message: "Invite not found" })
+    }
+
+    invite.status = status
+    await invite.save()
+
+    res.status(200).json({ message: "Invite status updated", invite })
+  } catch (error) {
+    console.error("Error updating invite status:", error)
+    res
+      .status(500)
+      .json({ message: "Error updating invite status", error: error.message })
+  }
+}
+
+exports.delete_invite = async (req, res) => {
+  try {
+    const { inviteId } = req.params
+
+    // Find and delete the invite
+    const invite = await Invite.findByIdAndDelete(inviteId)
+    if (!invite) {
+      return res.status(404).json({ message: "Invite not found" })
+    }
+
+    res.status(200).json({ message: "Invite removed successfully" })
+  } catch (error) {
+    console.error("Error deleting invite:", error)
+    res
+      .status(500)
+      .json({ message: "Failed to remove invite", error: error.message })
   }
 }
 
