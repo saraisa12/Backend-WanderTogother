@@ -29,17 +29,20 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Import routes
-const AuthRouter = require('./routes/authRouter')
-const tripRouter = require('./routes/trip')
-const activityRouter = require('./routes/activity')
+
+const AuthRouter = require("./routes/authRouter")
+const tripRouter = require("./routes/trip")
+const activityRouter = require("./routes/activity")
+const inviteRouter = require("./routes/invite")
 
 // Mount routes
-app.use('/auth', AuthRouter)
-app.use('/uploads', express.static('uploads')) // Serve static files from uploads
-app.use('/trip', tripRouter)
-app.use('/activity', activityRouter)
+app.use("/auth", AuthRouter)
+app.use("/uploads", express.static("uploads")) // Serve static files from uploads
+app.use("/trip", tripRouter)
+app.use("/activity", activityRouter)
+app.use("/invite", inviteRouter)
+// Catch-all route for unmatched routes
 
-app.use('/uploads', express.static('uploads'))
 
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route not found' })

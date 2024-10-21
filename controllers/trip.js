@@ -36,11 +36,9 @@ exports.get_user_trips = async (req, res) => {
   try {
     const userId = res.locals.payload.id
 
-    const creatorId = userId // Get the user's ID
-    console.log(creatorId)
-
-    // Find all trips created by the user
-    const trips = await Trip.find({ creator: creatorId })
+    const trips = await Trip.find({
+      $or: [{ creator: userId }, { participants: userId }],
+    })
 
     if (trips.length === 0) {
       return res.status(404).json({ message: "No trips found for this user." })

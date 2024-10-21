@@ -26,29 +26,30 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
-    // Extracts the necessary fields from the request body
     const { email, password } = req.body
-    // Finds a user by a particular field (in this case, email)
     const user = await User.findOne({ email })
-    // Checks if the password matches the stored digest
-    let matched = await middleware.comparePassword(
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    const matched = await middleware.comparePassword(
       user.passwordDigest,
       password
     )
-    // If they match, constructs a payload object of values we want on the front end
+
     if (matched) {
-      let payload = {
-        id: user.id,
-        email: user.email,
-      }
-      // Creates our JWT and packages it with our payload to send as a response
-      let token = middleware.createToken(payload)
-      return res.send({ user: payload, token })
+      const payload = { id: user.id, email: user.email }
+      const token = middleware.createToken(payload)
+
+      // Send both token and user info in the response
+      return res.status(200).json({ token, user: payload })
     }
-    res.status(401).send({ status: "Error", msg: "Unauthorized" })
+
+    return res.status(401).json({ message: "Invalid credentials" })
   } catch (error) {
-    console.log(error)
-    res.status(401).send({ status: "Error", msg: "An error has occurred!" })
+    console.error(error)
+    return res.status(500).json({ message: "Server error" })
   }
 }
 
