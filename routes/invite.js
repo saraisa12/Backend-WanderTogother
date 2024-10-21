@@ -15,4 +15,18 @@ router.get(
 )
 
 router.delete("/delete/:id", stripToken, verifyToken, inviteCntrl.delete_invite)
+
+router.put(
+  "/update/:inviteId",
+  stripToken,
+  verifyToken,
+  inviteCntrl.invite_update_put
+)
+
+router.get(
+  "/details/:inviteId",
+  stripToken,
+  verifyToken,
+  inviteCntrl.invite_details_get
+)
 module.exports = router

@@ -51,7 +51,10 @@ exports.invite_create_post = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "You've Been Invited to a Trip!",
-      text: `You've been invited to join the trip: ${trip.title}.`,
+      text: ` http://localhost:5173/invite/accept/${newInvite._id}
+
+        
+      `,
     }
 
     await transporter.sendMail(mailOptions)
@@ -105,6 +108,25 @@ exports.invite_list_get = async (req, res) => {
   }
 }
 
+exports.invite_details_get = async (req, res) => {
+  const { inviteId } = req.params
+
+  try {
+    const invite = await Invite.findById(inviteId).populate("trip invitee")
+
+    if (!invite) {
+      return res.status(404).json({ message: "Invite not found" })
+    }
+
+    res.status(200).json(invite)
+  } catch (error) {
+    console.error("Error fetching invite details:", error)
+    res
+      .status(500)
+      .json({ message: "Error fetching invite details", error: error.message })
+  }
+}
+
 exports.delete_invite = async (req, res) => {
   const inviteId = req.params.id
 
@@ -121,5 +143,29 @@ exports.delete_invite = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting invite", error: error.message })
+  }
+}
+
+// controllers/inviteController.js
+exports.invite_update_put = async (req, res) => {
+  const { status } = req.body
+  const { inviteId } = req.params
+
+  try {
+    const invite = await Invite.findById(inviteId)
+
+    if (!invite) {
+      return res.status(404).json({ message: "Invite not found" })
+    }
+
+    invite.status = status
+    await invite.save()
+
+    res.status(200).json({ message: "Invite status updated", invite })
+  } catch (error) {
+    console.error("Error updating invite status:", error)
+    res
+      .status(500)
+      .json({ message: "Error updating invite status", error: error.message })
   }
 }
