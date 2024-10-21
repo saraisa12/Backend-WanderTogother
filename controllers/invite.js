@@ -146,20 +146,30 @@ exports.delete_invite = async (req, res) => {
   }
 }
 
-// controllers/inviteController.js
 exports.invite_update_put = async (req, res) => {
   const { status } = req.body
   const { inviteId } = req.params
+  const userId = res.locals.payload.id // Get the user ID from the token
 
   try {
-    const invite = await Invite.findById(inviteId)
+    const invite = await Invite.findById(inviteId).populate("trip")
 
     if (!invite) {
       return res.status(404).json({ message: "Invite not found" })
     }
 
+    // Update the invite status
     invite.status = status
     await invite.save()
+
+    // If the status is accepted, add the user to the participants array
+    if (status === "accepted") {
+      const trip = invite.trip
+      if (!trip.participants.includes(userId)) {
+        trip.participants.push(userId)
+        await trip.save() // Save the updated trip
+      }
+    }
 
     res.status(200).json({ message: "Invite status updated", invite })
   } catch (error) {
