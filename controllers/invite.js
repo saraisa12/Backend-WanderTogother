@@ -33,6 +33,7 @@ exports.invite_create_post = async (req, res) => {
     const newInvite = new Invite({
       trip: tripId,
       invitee: invitee._id,
+      inviteeEmail: invitee.email,
       status: "pending", // You can set this based on your requirements
     })
 
