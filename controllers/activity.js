@@ -1,6 +1,5 @@
 const Activity = require('../models/Activity')
 
-// Function to create a new activity
 exports.createActivity = async (req, res) => {
   try {
     const { name, description, location } = req.body
@@ -25,7 +24,6 @@ exports.createActivity = async (req, res) => {
   }
 }
 
-// Function to get all activities
 exports.getAllActivities = async (req, res) => {
   try {
     const activities = await Activity.find()
@@ -43,7 +41,6 @@ exports.getAllActivities = async (req, res) => {
   }
 }
 
-// Function to get a single activity by ID
 exports.getActivity = async (req, res) => {
   try {
     const activity = await Activity.findById(req.params.id)
@@ -59,12 +56,11 @@ exports.getActivity = async (req, res) => {
   }
 }
 
-// Function to update an existing activity
 exports.updateActivity = async (req, res) => {
   try {
     const activityId = req.params.id
     const { name, description, location } = req.body
-    const photo = req.file ? req.file.path : req.body.photo // Update to allow for existing photo
+    const photo = req.file ? req.file.path : req.body.photo
 
     const updatedActivity = await Activity.findByIdAndUpdate(
       activityId,
@@ -92,7 +88,6 @@ exports.updateActivity = async (req, res) => {
   }
 }
 
-// Function to delete an activity
 exports.deleteActivity = async (req, res) => {
   try {
     const activityId = req.params.id
