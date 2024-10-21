@@ -2,13 +2,10 @@ const express = require('express')
 const { stripToken, verifyToken } = require('../middleware/index')
 const router = express.Router()
 
-router.use(express.urlencoded({ extended: true }))
-
-// Import controller
 const upload = require('../middleware/upload')
 const activityCntrl = require('../controllers/activity')
 
-// Routes
+// Route to create a new activity
 router.post(
   '/add',
   stripToken,
@@ -17,6 +14,7 @@ router.post(
   activityCntrl.createActivity
 )
 
+// Route to update an existing activity
 router.put(
   '/update/:id',
   stripToken,
@@ -25,6 +23,7 @@ router.put(
   activityCntrl.updateActivity
 )
 
+// Route to delete an activity
 router.delete(
   '/delete/:id',
   stripToken,
@@ -32,6 +31,10 @@ router.delete(
   activityCntrl.deleteActivity
 )
 
+// Route to get all activities
 router.get('/index', stripToken, verifyToken, activityCntrl.getAllActivities)
+
+// Route to get a single activity by ID
+router.get('/:id', stripToken, verifyToken, activityCntrl.getActivity)
 
 module.exports = router
