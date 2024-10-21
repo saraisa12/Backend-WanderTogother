@@ -2,13 +2,9 @@ const express = require('express')
 const { stripToken, verifyToken } = require('../middleware/index')
 const router = express.Router()
 
-router.use(express.urlencoded({ extended: true }))
-
-// Import controller
 const upload = require('../middleware/upload')
 const activityCntrl = require('../controllers/activity')
 
-// Routes
 router.post(
   '/add',
   stripToken,
@@ -33,5 +29,7 @@ router.delete(
 )
 
 router.get('/index', stripToken, verifyToken, activityCntrl.getAllActivities)
+
+router.get('/:id', stripToken, verifyToken, activityCntrl.getActivity)
 
 module.exports = router

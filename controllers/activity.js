@@ -41,6 +41,21 @@ exports.getAllActivities = async (req, res) => {
   }
 }
 
+exports.getActivity = async (req, res) => {
+  try {
+    const activity = await Activity.findById(req.params.id)
+
+    if (!activity) {
+      return res.status(404).json({ message: 'Activity not found' })
+    }
+
+    res.status(200).json({ activity })
+  } catch (error) {
+    console.error('Error fetching activity:', error)
+    res.status(500).json({ message: 'Failed to fetch activity' })
+  }
+}
+
 exports.updateActivity = async (req, res) => {
   try {
     const activityId = req.params.id
