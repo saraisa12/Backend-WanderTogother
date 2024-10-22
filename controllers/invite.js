@@ -48,13 +48,80 @@ exports.invite_create_post = async (req, res) => {
       },
     })
 
+    const inviteLink = `http://localhost:5173/invite/accept/${newInvite._id}`
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "You've Been Invited to a Trip!",
-      text: ` http://localhost:5173/invite/accept/${newInvite._id}
-
-        
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              background-color: #f9f9f9;
+              margin: 0;
+              padding: 0;
+            }
+            .email-container {
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #ffffff;
+              padding: 20px;
+              border-radius: 10px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              text-align: center;
+              padding: 10px 0;
+            }
+            .header img {
+              width: 120px;
+            }
+            .content {
+              padding: 20px;
+              text-align: center;
+            }
+            .button {
+              background-color: #28a745;
+              color: #ffffff;
+              text-decoration: none;
+              padding: 15px 20px;
+              border-radius: 5px;
+              display: inline-block;
+              margin-top: 20px;
+            }
+            .footer {
+              margin-top: 20px;
+              padding: 10px;
+              text-align: center;
+              font-size: 12px;
+              color: #777777;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <img src="https://yourdomain.com/logo.png" alt="Logo">
+            </div>
+            <div class="content">
+              <h1>You're Invited to a Trip!</h1>
+              <p>
+                Your friend has invited you to join an upcoming trip. Click the button below to see the trip details and join in on the adventure.
+              </p>
+              <a href="${inviteLink}" class="button">Join the Trip</a>
+            </div>
+            <div class="footer">
+              <p>
+                If you have any questions, please contact us at <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>.
+              </p>
+              <p>&copy; 2024 Wander Together. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
       `,
     }
 
