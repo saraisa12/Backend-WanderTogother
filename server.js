@@ -28,18 +28,21 @@ if (!fs.existsSync(uploadsDir)) {
   console.log('Created uploads directory')
 }
 
-// Import routes
-const AuthRouter = require('./routes/authRouter')
-const tripRouter = require('./routes/trip')
-const activityRouter = require('./routes/activity') // Assuming voting and commenting routes are in this file
+
+const AuthRouter = require("./routes/authRouter")
+const tripRouter = require("./routes/trip")
+const activityRouter = require("./routes/activity")
+const inviteRouter = require("./routes/invite")
 
 // Mount routes
-app.use('/auth', AuthRouter)
-app.use('/uploads', express.static('uploads')) // Serve static files from uploads
-app.use('/trip', tripRouter)
-app.use('/activity', activityRouter) // Voting & commenting routes will be in activityRouter
+app.use("/auth", AuthRouter)
+app.use("/uploads", express.static("uploads")) // Serve static files from uploads
+app.use("/trip", tripRouter)
+app.use("/activity", activityRouter)
+app.use("/invite", inviteRouter)
+// Catch-all route for unmatched routes
 
-app.use('/uploads', express.static('uploads'))
+
 
 // Catch 404 errors
 app.use((req, res, next) => {

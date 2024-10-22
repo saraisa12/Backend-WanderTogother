@@ -23,6 +23,11 @@ const Login = async (req, res) => {
   try {
     const { email, password } = req.body
     const user = await User.findOne({ email })
+
+     if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+    
     let matched = await middleware.comparePassword(
       user.passwordDigest,
       password
@@ -39,6 +44,7 @@ const Login = async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(401).send({ status: 'Error', msg: 'An error has occurred!' })
+
   }
 }
 
