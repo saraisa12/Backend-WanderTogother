@@ -1,34 +1,40 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose")
 
 const commentSchema = new mongoose.Schema({
   text: {
     type: String,
-    required: true
+    required: true,
   },
   user: {
-    type: String,
-    required: true
+    type: mongoose.Schema.Types.ObjectId, // Reference to the User model
+    ref: "User", // Referencing the User model
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 })
 
 const activitySchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   description: String,
   location: String,
   photo: String,
   votes: {
     type: Number,
-    default: 0
+    default: 0,
   },
-  comments: [commentSchema]
+  comments: [commentSchema],
+  tripId: {
+    type: mongoose.Schema.Types.ObjectId, // Reference to the Trip
+    ref: "Trip",
+    required: true,
+  },
 })
 
-const Activity = mongoose.model('Activity', activitySchema)
+const Activity = mongoose.model("Activity", activitySchema)
 module.exports = Activity
