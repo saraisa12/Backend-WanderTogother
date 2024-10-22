@@ -28,7 +28,6 @@ if (!fs.existsSync(uploadsDir)) {
   console.log('Created uploads directory')
 }
 
-// Import routes
 
 const AuthRouter = require("./routes/authRouter")
 const tripRouter = require("./routes/trip")
@@ -44,15 +43,19 @@ app.use("/invite", inviteRouter)
 // Catch-all route for unmatched routes
 
 
+
+// Catch 404 errors
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route not found' })
 })
 
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).json({ message: 'Something went wrong', error: err.message })
 })
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
 })

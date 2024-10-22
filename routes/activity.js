@@ -32,4 +32,8 @@ router.get('/index', stripToken, verifyToken, activityCntrl.getAllActivities)
 
 router.get('/:id', stripToken, verifyToken, activityCntrl.getActivity)
 
+router.post('/:id/vote', stripToken, verifyToken, activityCntrl.voteActivity)
+
+router.post('/:id/comment', stripToken, verifyToken, activityCntrl.addComment)
+
 module.exports = router
