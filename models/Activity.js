@@ -22,15 +22,18 @@ const activitySchema = new mongoose.Schema({
     required: true,
   },
   description: String,
-  location: String,
-  photo: String,
+  mapsUrl: { type: String, required: true },
+  photoUrl: { type: String, required: true },
   votes: {
     type: Number,
     default: 0,
   },
   comments: [commentSchema],
+  Date: {
+    type: Date,
+  },
   tripId: {
-    type: mongoose.Schema.Types.ObjectId, // Reference to the Trip
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Trip",
     required: true,
   },
