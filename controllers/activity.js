@@ -1,22 +1,23 @@
 const Activity = require("../models/Activity")
 const mongoose = require("mongoose")
+
 exports.createActivity = async (req, res) => {
   try {
-    const { name, description, location, tripId } = req.body
-    const photo = req.file ? req.file.path : null
+    console.log("Received request body:", req.body) // Log the incoming request body
+
+    const { name, description, Date, tripId, mapsUrl, photoUrl } = req.body
 
     const newActivity = new Activity({
       name,
       description,
-      location,
-      photo,
+      Date,
       tripId,
+      mapsUrl,
+      photoUrl,
     })
 
     await newActivity.save()
-    res
-      .status(201)
-      .json({ message: "Activity added successfully!", activity: newActivity })
+    res.status(201).json({ message: "Activity added successfully!" })
   } catch (error) {
     console.error("Error creating activity:", error)
     res
