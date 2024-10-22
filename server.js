@@ -31,25 +31,28 @@ if (!fs.existsSync(uploadsDir)) {
 // Import routes
 const AuthRouter = require('./routes/authRouter')
 const tripRouter = require('./routes/trip')
-const activityRouter = require('./routes/activity')
+const activityRouter = require('./routes/activity') // Assuming voting and commenting routes are in this file
 
 // Mount routes
 app.use('/auth', AuthRouter)
 app.use('/uploads', express.static('uploads')) // Serve static files from uploads
 app.use('/trip', tripRouter)
-app.use('/activity', activityRouter)
+app.use('/activity', activityRouter) // Voting & commenting routes will be in activityRouter
 
 app.use('/uploads', express.static('uploads'))
 
+// Catch 404 errors
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route not found' })
 })
 
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).json({ message: 'Something went wrong', error: err.message })
 })
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
 })

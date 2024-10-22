@@ -103,3 +103,57 @@ exports.deleteActivity = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
+exports.voteActivity = async (req, res) => {
+  try {
+    const { voteType } = req.body
+    const activity = await Activity.findById(req.params.id)
+
+    if (!activity) {
+      return res.status(404).json({ message: 'Activity not found' })
+    }
+
+    if (voteType === 'upvote') {
+      activity.votes = (activity.votes || 0) + 1
+    } else if (voteType === 'downvote') {
+      activity.votes = (activity.votes || 0) - 1
+    }
+
+    await activity.save()
+    res.status(200).json({ message: 'Vote registered', votes: activity.votes })
+  } catch (error) {
+    console.error('Error voting activity:', error)
+    res
+      .status(500)
+      .json({ message: 'Failed to register vote', error: error.message })
+  }
+}
+
+exports.addComment = async (req, res) => {
+  try {
+    const { text, user } = req.body
+    const activity = await Activity.findById(req.params.id)
+
+    if (!activity) {
+      return res.status(404).json({ message: 'Activity not found' })
+    }
+
+    const newComment = {
+      text,
+      user,
+      createdAt: new Date()
+    }
+
+    activity.comments.push(newComment)
+
+    await activity.save()
+    res
+      .status(200)
+      .json({ message: 'Comment added', comments: activity.comments })
+  } catch (error) {
+    console.error('Error adding comment:', error)
+    res
+      .status(500)
+      .json({ message: 'Failed to add comment', error: error.message })
+  }
+}
