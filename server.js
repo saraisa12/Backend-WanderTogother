@@ -5,16 +5,14 @@ const cors = require('cors')
 const fs = require('fs')
 const path = require('path')
 
-// Load environment variables from .env file
 require('dotenv').config()
-
-// Load DB configuration
-require('./config/db') // Assuming you handle your MongoDB connection here
+require('./config/db') // Ensure your MongoDB connection is handled here
 
 const PORT = process.env.PORT || 4000
 
 const app = express()
 
+// Middleware
 app.use(cors())
 app.use(logger('dev'))
 app.use(express.json())
@@ -28,23 +26,22 @@ if (!fs.existsSync(uploadsDir)) {
   console.log('Created uploads directory')
 }
 
-
-const AuthRouter = require("./routes/authRouter")
-const tripRouter = require("./routes/trip")
-const activityRouter = require("./routes/activity")
-const inviteRouter = require("./routes/invite")
+// Import routers
+const AuthRouter = require('./routes/authRouter')
+const tripRouter = require('./routes/trip')
+const activityRouter = require('./routes/activity')
+const inviteRouter = require('./routes/invite')
+const notesRouter = require('./routes/notes') // Updated to match your route file name
 
 // Mount routes
-app.use("/auth", AuthRouter)
-app.use("/uploads", express.static("uploads")) // Serve static files from uploads
-app.use("/trip", tripRouter)
-app.use("/activity", activityRouter)
-app.use("/invite", inviteRouter)
+app.use('/auth', AuthRouter)
+app.use('/uploads', express.static('uploads')) // Serve static files from uploads
+app.use('/trip', tripRouter)
+app.use('/activity', activityRouter)
+app.use('/invite', inviteRouter)
+app.use('/notes', notesRouter) // Use updated notes route
+
 // Catch-all route for unmatched routes
-
-
-
-// Catch 404 errors
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route not found' })
 })
