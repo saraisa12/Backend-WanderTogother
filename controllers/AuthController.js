@@ -1,5 +1,5 @@
-const User = require('../models/User')
-const middleware = require('../middleware')
+const User = require("../models/User")
+const middleware = require("../middleware")
 
 const Register = async (req, res) => {
   try {
@@ -9,7 +9,7 @@ const Register = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .send('A user with that email has already been registered!')
+        .send("A user with that email has already been registered!")
     } else {
       const user = await User.create({ name, email, passwordDigest })
       res.send(user)
@@ -24,10 +24,10 @@ const Login = async (req, res) => {
     const { email, password } = req.body
     const user = await User.findOne({ email })
 
-     if (!user) {
+    if (!user) {
       return res.status(404).json({ message: "User not found" })
     }
-    
+
     let matched = await middleware.comparePassword(
       user.passwordDigest,
       password
@@ -35,16 +35,15 @@ const Login = async (req, res) => {
     if (matched) {
       let payload = {
         id: user.id,
-        email: user.email
+        email: user.email,
       }
       let token = middleware.createToken(payload)
       return res.send({ user: payload, token })
     }
-    res.status(401).send({ status: 'Error', msg: 'Unauthorized' })
+    res.status(401).send({ status: "Error", msg: "Unauthorized" })
   } catch (error) {
     console.log(error)
-    res.status(401).send({ status: 'Error', msg: 'An error has occurred!' })
-
+    res.status(401).send({ status: "Error", msg: "An error has occurred!" })
   }
 }
 
@@ -61,22 +60,22 @@ const UpdatePassword = async (req, res) => {
     if (matched) {
       let passwordDigest = await middleware.hashPassword(newPassword)
       user = await User.findByIdAndUpdate(req.params.user_id, {
-        passwordDigest
+        passwordDigest,
       })
       let payload = {
         id: user.id,
-        email: user.email
+        email: user.email,
       }
-      return res.send({ status: 'Password Updated!', user: payload })
+      return res.send({ status: "Password Updated!", user: payload })
     }
     res
       .status(401)
-      .send({ status: 'Error', msg: 'Old Password did not match!' })
+      .send({ status: "Error", msg: "Old Password did not match!" })
   } catch (error) {
     console.log(error)
     res.status(401).send({
-      status: 'Error',
-      msg: 'An error has occurred updating password!'
+      status: "Error",
+      msg: "An error has occurred updating password!",
     })
   }
 }
@@ -86,9 +85,21 @@ const CheckSession = async (req, res) => {
   res.send(payload)
 }
 
+const getUserDetails = async (req, res) => {
+  const { ids } = req.body
+  try {
+    const users = await User.find({ _id: { $in: ids } }).select("name _id")
+    res.json(users)
+  } catch (error) {
+    console.error("Error fetching user details:", error)
+    res.status(500).json({ message: "Error fetching user details" })
+  }
+}
+
 module.exports = {
   Register,
   Login,
   UpdatePassword,
-  CheckSession
+  CheckSession,
+  getUserDetails,
 }

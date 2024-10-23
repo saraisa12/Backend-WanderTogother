@@ -17,4 +17,6 @@ router.get(
   controller.CheckSession
 )
 
+router.post("/details", controller.getUserDetails)
+
 module.exports = router
