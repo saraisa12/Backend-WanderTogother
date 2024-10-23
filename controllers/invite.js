@@ -39,7 +39,6 @@ exports.invite_create_post = async (req, res) => {
 
     await newInvite.save()
 
-    // Send an email notification (if configured)
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

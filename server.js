@@ -1,12 +1,12 @@
-const mongoose = require('mongoose')
-const express = require('express')
-const logger = require('morgan')
-const cors = require('cors')
-const fs = require('fs')
-const path = require('path')
+const mongoose = require("mongoose")
+const express = require("express")
+const logger = require("morgan")
+const cors = require("cors")
+const fs = require("fs")
+const path = require("path")
 
-require('dotenv').config()
-require('./config/db') // Ensure your MongoDB connection is handled here
+require("dotenv").config()
+require("./config/db")
 
 const PORT = process.env.PORT || 4000
 
@@ -14,45 +14,43 @@ const app = express()
 
 // Middleware
 app.use(cors())
-app.use(logger('dev'))
+app.use(logger("dev"))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, 'uploads')
+const uploadsDir = path.join(__dirname, "uploads")
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true })
-  console.log('Created uploads directory')
+  console.log("Created uploads directory")
 }
 
 // Import routers
-const AuthRouter = require('./routes/authRouter')
-const tripRouter = require('./routes/trip')
-const activityRouter = require('./routes/activity')
-const inviteRouter = require('./routes/invite')
-const notesRouter = require('./routes/notes') // Updated to match your route file name
+const AuthRouter = require("./routes/authRouter")
+const tripRouter = require("./routes/trip")
+const activityRouter = require("./routes/activity")
+const inviteRouter = require("./routes/invite")
+const notesRouter = require("./routes/notes")
+const albumRouter = require("./routes/album")
 
-// Mount routes
-app.use('/auth', AuthRouter)
-app.use('/uploads', express.static('uploads')) // Serve static files from uploads
-app.use('/trip', tripRouter)
-app.use('/activity', activityRouter)
-app.use('/invite', inviteRouter)
-app.use('/notes', notesRouter) // Use updated notes route
+app.use("/auth", AuthRouter)
+app.use("/uploads", express.static("uploads"))
+app.use("/trip", tripRouter)
+app.use("/activity", activityRouter)
+app.use("/invite", inviteRouter)
+app.use("/notes", notesRouter)
+app.use("/album", albumRouter)
 
-// Catch-all route for unmatched routes
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Route not found' })
+  res.status(404).json({ message: "Route not found" })
 })
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack)
-  res.status(500).json({ message: 'Something went wrong', error: err.message })
+  res.status(500).json({ message: "Something went wrong", error: err.message })
 })
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
 })
