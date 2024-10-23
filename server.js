@@ -33,6 +33,7 @@ const activityRouter = require("./routes/activity")
 const inviteRouter = require("./routes/invite")
 const notesRouter = require("./routes/notes")
 const albumRouter = require("./routes/album")
+const checklistRouter = require("./routes/checklist")
 
 app.use("/auth", AuthRouter)
 app.use("/uploads", express.static("uploads"))
@@ -41,6 +42,7 @@ app.use("/activity", activityRouter)
 app.use("/invite", inviteRouter)
 app.use("/notes", notesRouter)
 app.use("/album", albumRouter)
+app.use("/checklist", checklistRouter)
 
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route not found" })
