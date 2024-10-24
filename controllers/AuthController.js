@@ -88,7 +88,7 @@ const CheckSession = async (req, res) => {
 const getUserDetails = async (req, res) => {
   const { ids } = req.body
   try {
-    const users = await User.find({ _id: { $in: ids } }).select("name _id")
+    const users = await User.find({ _id: { $in: ids } })
     res.json(users)
   } catch (error) {
     console.error("Error fetching user details:", error)

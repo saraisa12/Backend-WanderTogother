@@ -83,7 +83,7 @@ exports.invite_create_post = async (req, res) => {
               text-align: center;
             }
             .button {
-              background-color: #28a745;
+              background-color: #6b4ce6;
               color: #ffffff;
               text-decoration: none;
               padding: 15px 20px;
@@ -103,7 +103,7 @@ exports.invite_create_post = async (req, res) => {
         <body>
           <div class="email-container">
             <div class="header">
-              <img src="https://yourdomain.com/logo.png" alt="Logo">
+              <img src="/Images/emailLogo.png" alt="Logo">
             </div>
             <div class="content">
               <h1>You're Invited to a Trip!</h1>
@@ -114,7 +114,7 @@ exports.invite_create_post = async (req, res) => {
             </div>
             <div class="footer">
               <p>
-                If you have any questions, please contact us at <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>.
+                If you have any questions, please contact us at <a href="mailto:support@yourdomain.com">wanderTogother@gmail.com</a>.
               </p>
               <p>&copy; 2024 Wander Together. All rights reserved.</p>
             </div>

@@ -30,12 +30,15 @@ exports.createActivity = async (req, res) => {
 exports.getAllActivities = async (req, res) => {
   try {
     const { tripId } = req.params
+    console.log({ tripId })
     const activities = await Activity.find({ tripId }).populate({
       path: "comments.user", // Populate the user field in comments
       select: "name", // Only fetch the name field
     })
 
     if (activities.length === 0) {
+      console.log("No activities found for this trip:", tripId)
+      console.log(activities.length)
       return res
         .status(404)
         .json({ message: "No activities found for this trip." })

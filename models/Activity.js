@@ -25,8 +25,18 @@ const activitySchema = new mongoose.Schema({
   mapsUrl: { type: String, required: true },
   photoUrl: { type: String, required: true },
   votes: {
-    type: Number,
-    default: 0,
+    happy: {
+      type: Number,
+      default: 0,
+    },
+    neutral: {
+      type: Number,
+      default: 0,
+    },
+    angry: {
+      type: Number,
+      default: 0,
+    },
   },
   comments: [commentSchema],
   Date: {
