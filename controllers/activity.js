@@ -137,6 +137,7 @@ exports.deleteActivity = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
 exports.voteActivity = async (req, res) => {
   try {
     const { voteType } = req.body
