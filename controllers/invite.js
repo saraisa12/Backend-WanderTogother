@@ -141,8 +141,6 @@ exports.invite_list_get = async (req, res) => {
   const { tripId } = req.params
 
   console.log({ tripId })
-  // Get the trip ID from the route parameters
-
   try {
     // Check if the trip exists
     const trip = await Trip.findById(tripId)
@@ -150,7 +148,6 @@ exports.invite_list_get = async (req, res) => {
       return res.status(404).json({ message: "Trip not found" })
     }
 
-    // Find invites for this trip and populate invitee information
     const invites = await Invite.find({ trip: tripId }).populate(
       "invitee",
       "email"
@@ -158,14 +155,12 @@ exports.invite_list_get = async (req, res) => {
 
     res.set("Cache-Control", "no-store")
 
-    // If no invites found
     if (invites.length === 0) {
       return res
         .status(200)
         .json({ message: "No invites found for this trip." })
     }
 
-    // Return the invites with their statuses
     res.status(200).json({ invites })
   } catch (error) {
     console.error("Error fetching invites:", error)

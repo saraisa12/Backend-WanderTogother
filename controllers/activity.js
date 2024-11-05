@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 
 exports.createActivity = async (req, res) => {
   try {
-    console.log("Received request body:", req.body) // Log the incoming request body
+    console.log("Received request body:", req.body) 
 
     const { name, description, Date, tripId, mapsUrl, photoUrl } = req.body
 
@@ -26,14 +26,13 @@ exports.createActivity = async (req, res) => {
   }
 }
 
-// Fetch all activities and populate the user field in comments
 exports.getAllActivities = async (req, res) => {
   try {
     const { tripId } = req.params
     console.log({ tripId })
     const activities = await Activity.find({ tripId }).populate({
-      path: "comments.user", // Populate the user field in comments
-      select: "name", // Only fetch the name field
+      path: "comments.user", 
+      select: "name", 
     })
 
     if (activities.length === 0) {
@@ -53,30 +52,11 @@ exports.getAllActivities = async (req, res) => {
   }
 }
 
-// Fetch a single activity and populate the user field in comments
 exports.getActivity = async (req, res) => {
   try {
     const activity = await Activity.findById(req.params.id).populate({
-      path: "comments.user", // Populate the user field in comments
-      select: "name", // Only fetch the name field
-    })
-
-    if (!activity) {
-      return res.status(404).json({ message: "Activity not found" })
-    }
-
-    res.status(200).json({ activity })
-  } catch (error) {
-    console.error("Error fetching activity:", error)
-    res.status(500).json({ message: "Failed to fetch activity" })
-  }
-}
-
-exports.getActivity = async (req, res) => {
-  try {
-    const activity = await Activity.findById(req.params.id).populate({
-      path: "comments.user", // Populate the user field in comments
-      select: "name", // Only fetch the name field
+      path: "comments.user",
+      select: "name",
     })
 
     if (!activity) {
@@ -181,40 +161,33 @@ exports.voteActivity = async (req, res) => {
 
 exports.addComment = async (req, res) => {
   try {
-    // Get the user ID from the token payload (assuming it's stored in res.locals.payload.id)
+  
     const userId = res.locals.payload.id
 
-    // Validate if the userId is present and is a valid ObjectId
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Invalid or missing user ID" })
     }
 
-    // Get the comment text from the request body
     const { text } = req.body
     if (!text || text.trim() === "") {
       return res.status(400).json({ message: "Comment text is required" })
     }
 
-    // Find the activity to which the comment is being added
     const activity = await Activity.findById(req.params.id)
     if (!activity) {
       return res.status(404).json({ message: "Activity not found" })
     }
 
-    // Create a new comment with the user ID and the comment text
     const newComment = {
       text,
-      user: new mongoose.Types.ObjectId(userId), // Corrected ObjectId creation with 'new'
+      user: new mongoose.Types.ObjectId(userId), 
       createdAt: new Date(),
     }
 
-    // Add the new comment to the activity's comments array
     activity.comments.push(newComment)
 
-    // Save the updated activity document
     await activity.save()
 
-    // Return a success response with the updated list of comments
     res
       .status(200)
       .json({ message: "Comment added", comments: activity.comments })
